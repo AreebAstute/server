@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AreebAstute/server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AreebAstute/server/issues"
+  },
+  "homepage": "https://github.com/AreebAstute/server#readme",
+  "description": "",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
+    "vite": "^6.1.0"
+  }
+}
