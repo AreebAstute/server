@@ -9,6 +9,10 @@ import { createServer as createViteServer } from 'vite';
 import { generateMetaInfo } from './seoData.js';
 import { getHeader } from './html-template.js';
 import { promises } from "fs";
+import cors from 'cors';
+
+
+const PORT = process.env.PORT || 3000;
 
 // Get __dirname equivalent in ES6 modules
 const __filename = fileURLToPath(import.meta.url);
@@ -22,9 +26,11 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 
   console.log("this is resolve", resolve)
 
-  const indexProd = isProd ? fs.readFileSync(resolve('../new-repo-for/dist/client/index.html'), 'utf-8') : '';
+  const indexProd = isProd ? fs.readFileSync(resolve('./dist/client/index.html'), 'utf-8') : '';
 
   const app = express();
+  
+  app.use(cors({ origin: 'https://your-netlify-app.netlify.app' })); // Replace with your actual Netlify URL
 
   let vite;
   if (!isProd) {
@@ -40,7 +46,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
     app.use(vite.middlewares);
   } else {
     app.use(compression());
-    app.use(serveStatic(resolve('../new-repo-for/dist/client'), { index: false }));
+    app.use(serveStatic(resolve('./dist/client'), { index: false }));
   }
 
   app.use('*', async (req, res) => {
@@ -49,7 +55,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 
       let template, render;
       if (!isProd) {
-        let template = await promises.readFile("../index.html", "utf-8");
+        template = await promises.readFile("../index.html", "utf-8");
 
         const metaData = generateMetaInfo({ path: url });
         const metaTags = getHeader(metaData);
@@ -60,7 +66,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
         res.status(200).set({ "Content-Type": "text/html" }).end(template);
       } else {
         template = indexProd;
-        render = (await import('../new-repo-for/dist/server/entry-server.js')).render;
+        render = (await import(resolve('./dist/server/entry-server.js'))).render;
 
         const context = {};
         const appHtml = await render(url, context);
@@ -91,7 +97,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 
 if (!isTest) {
   createServer().then(({ app }) =>
-    app.listen(3000, () => {
+    app.listen(PORT, () => {
       console.log('http://localhost:3000');
     })
   );
